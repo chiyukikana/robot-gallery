@@ -1,62 +1,43 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import styles from "./ShoppingCart.module.css";
 import { FiShoppingCart } from "react-icons/fi";
 import { appContext } from "../AppState";
 
 interface Props {}
 
-interface State {
-  isOpen: boolean;
-}
-
-class ShoppingCart extends React.Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      isOpen: false,
-    };
-  }
-
-  handleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+const ShoppingCart: React.FC<Props> = () => {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const value = useContext(appContext);
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if ((e.target as HTMLElement).nodeName === "SPAN") {
-      this.setState({
-        isOpen: !this.state.isOpen,
-      });
+      setIsOpen(!isOpen);
     }
   };
 
-  render() {
-    return (
-      <appContext.Consumer>
-        {(value) => {
-          return (
-            <div className={styles.cartContainer}>
-              <button className={styles.button} onClick={this.handleClick}>
-                <FiShoppingCart />
-                <span>购物车 {value.shoppingCart.items.length} (件)</span>
-              </button>
-              <div
-                className={styles.cartDropDown}
-                style={{
-                  display: this.state.isOpen ? "block" : "none",
-                }}
-              >
-                <ul>
-                  {value.shoppingCart.items.map(({ id, name }) => {
-                    return (
-                      <li key={Math.random()}>
-                        ID: {id} Name: {name}
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            </div>
-          );
+  return (
+    <div className={styles.cartContainer}>
+      <button className={styles.button} onClick={handleClick}>
+        <FiShoppingCart />
+        <span>购物车 {value.shoppingCart.items.length} (件)</span>
+      </button>
+      <div
+        className={styles.cartDropDown}
+        style={{
+          display: isOpen ? "block" : "none",
         }}
-      </appContext.Consumer>
-    );
-  }
-}
+      >
+        <ul>
+          {value.shoppingCart.items.map(({ id, name }, index) => {
+            return (
+              <li key={index}>
+                {id}, {name}
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </div>
+  );
+};
 
 export default ShoppingCart;
